@@ -1,0 +1,76 @@
+const player = document.getElementById('player');
+const obstacle = document.getElementById('obstacle');
+const police = document.getElementById('police');
+const home = document.getElementById('home');
+
+let isJumping = false;
+
+document.addEventListener('keydown', function (e) {
+  if (e.code === 'Space' && !isJumping) {
+    jump();
+  }
+});
+
+function jump() {
+  isJumping = true;
+  let position = 0;
+  let upInterval = setInterval(() => {
+    if (position >= 150) {
+      clearInterval(upInterval);
+      let downInterval = setInterval(() => {
+        if (position <= 0) {
+          clearInterval(downInterval);
+          isJumping = false;
+        } else {
+          position -= 5;
+          player.style.bottom = position + 'px';
+        }
+      }, 20);
+    } else {
+      position += 5;
+      player.style.bottom = position + 'px';
+    }
+  }, 20);
+}
+
+function checkCollision() {
+  const playerRect = player.getBoundingClientRect();
+  const obstacleRect = obstacle.getBoundingClientRect();
+  const policeRect = police.getBoundingClientRect();
+  const homeRect = home.getBoundingClientRect();
+
+  // Colisão com obstáculo
+  if (
+    playerRect.right > obstacleRect.left &&
+    playerRect.left < obstacleRect.right &&
+    playerRect.bottom > obstacleRect.top &&
+    playerRect.top < obstacleRect.bottom
+  ) {
+    alert('Você bateu em um obstáculo! Tente novamente.');
+    location.reload();
+  }
+
+  // Colisão com polícia
+  if (
+    playerRect.right > policeRect.left &&
+    playerRect.left < policeRect.right &&
+    playerRect.bottom > policeRect.top &&
+    playerRect.top < policeRect.bottom
+  ) {
+    alert('A polícia te pegou! Tente novamente.');
+    location.reload();
+  }
+
+  // Chegou em casa
+  if (
+    playerRect.right > homeRect.left &&
+    playerRect.left < homeRect.right &&
+    playerRect.bottom > homeRect.top &&
+    playerRect.top < homeRect.bottom
+  ) {
+    alert('Você chegou em casa e pegou a moto branca! Parabéns!');
+    location.reload();
+  }
+}
+
+setInterval(checkCollision, 100);
